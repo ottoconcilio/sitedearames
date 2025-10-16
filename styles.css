@@ -1,0 +1,86 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #000000;
+}
+
+.navbar {
+    background-color: #0b3d06; /* Azul temático */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #ffd700; /* Dourado para "gênio" */
+}
+
+.nav-link {
+    color: rgb(0, 0, 0) !important;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #8a9c25 !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.btn-primary {
+    background-color: #28a745;
+    border: none;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.footer {
+    position: fixed;  /* Fixa o footer na tela */
+    bottom: 0;        /* Coloca no fundo da tela */
+    left: 0;          /* Alinha à esquerda */
+    width: 100%;      /* Ocupa toda a largura */
+    background-color: #007bff;  /* Manter o fundo do seu estilo original */
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    z-index: 1000;    /* Garante que fique sobre outros elementos, se necessário */
+    /* Remova margin-top se existir, pois fixed ignora o fluxo normal */
+}
+
+body {
+    padding-bottom: 50px;  /* Ajuste conforme a altura do seu footer (ex: padding + altura do texto) */
+}
+
+.banner {
+    background-color: #ffd700;
+    padding: 40px 0;
+    text-align: center;
+    color: #007bff;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#itens-carrinho {
+    margin-bottom: 20px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
