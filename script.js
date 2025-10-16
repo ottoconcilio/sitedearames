@@ -19,7 +19,32 @@ const produtos = [
 ];
 
 const numeroWhatsApp = '5511989894259';
-let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+let carrinho = [];
+
+// Carregamento do carrinho com try-catch para mobile (file://)
+try {
+    const savedCarrinho = localStorage.getItem('carrinho');
+    if (savedCarrinho) {
+        carrinho = JSON.parse(savedCarrinho);
+    }
+} catch (e) {
+    console.error('Falha ao carregar carrinho do localStorage:', e);
+    // Não exibe alerta aqui para não irritar no load inicial; só avisa em ações
+    carrinho = []; // Fallback para array vazio
+}
+
+// Função para salvar carrinho com try-catch
+function salvarCarrinho() {
+    try {
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    } catch (e) {
+        console.error('Falha ao salvar carrinho no localStorage:', e);
+        if (typeof alert !== 'undefined' && !sessionStorage.getItem('localStorageWarned')) {
+            alert('Aviso: O armazenamento local não está disponível no mobile (arquivo local). Use um servidor web (ex: python -m http.server) para salvar o carrinho. Itens visuais persistem na sessão atual.');
+            sessionStorage.setItem('localStorageWarned', 'true'); // Evita alertas repetidos
+        }
+    }
+}
 
 // Função para remover acentos
 function removeAccents(str) {
@@ -49,7 +74,7 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         } else {
             carrinho.push({ produto: jogo, quantidade: quantidade });
         }
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        salvarCarrinho(); // Usa try-catch
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
     }
@@ -67,7 +92,7 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         } else {
             itemExistente.quantidade = novaQuantidade;
         }
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        salvarCarrinho(); // Usa try-catch
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
         if (document.getElementById('itens-carrinho')) {
@@ -278,7 +303,7 @@ if (document.getElementById('itens-carrinho')) {
 
     function removerDoCarrinho(index) {
         carrinho.splice(index, 1);
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        salvarCarrinho(); // Usa try-catch
         renderizarCarrinho();
     }
 

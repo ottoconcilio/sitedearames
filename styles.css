@@ -15,7 +15,7 @@ body {
 }
 
 .nav-link {
-    color: rgb(0, 0, 0) !important;
+    color: white !important;
     transition: color 0.3s;
 }
 
@@ -65,7 +65,7 @@ body {
 }
 
 body {
-    padding-bottom: 50px;  /* Ajuste conforme a altura do seu footer (ex: padding + altura do texto) */
+    padding-bottom: 80px;  /* Aumentado para telas mobile com teclado virtual */
 }
 
 .banner {
