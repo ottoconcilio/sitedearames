@@ -21,27 +21,29 @@ const produtos = [
 const numeroWhatsApp = '5511989894259';
 let carrinho = [];
 
-// Carregamento do carrinho com try-catch para mobile (file://)
+// Carregamento do carrinho com fallback para sessionStorage
 try {
-    const savedCarrinho = localStorage.getItem('carrinho');
+    const savedCarrinho = localStorage.getItem('carrinho') || sessionStorage.getItem('carrinho');
     if (savedCarrinho) {
         carrinho = JSON.parse(savedCarrinho);
     }
 } catch (e) {
-    console.error('Falha ao carregar carrinho do localStorage:', e);
-    // Não exibe alerta aqui para não irritar no load inicial; só avisa em ações
+    console.error('Falha ao carregar carrinho do storage:', e);
     carrinho = []; // Fallback para array vazio
 }
 
-// Função para salvar carrinho com try-catch
+// Função para salvar carrinho com fallback para sessionStorage
 function salvarCarrinho() {
     try {
         localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        sessionStorage.removeItem('carrinho'); // Prioriza localStorage
     } catch (e) {
-        console.error('Falha ao salvar carrinho no localStorage:', e);
-        if (typeof alert !== 'undefined' && !sessionStorage.getItem('localStorageWarned')) {
-            alert('Aviso: O armazenamento local não está disponível no mobile (arquivo local). Use um servidor web (ex: python -m http.server) para salvar o carrinho. Itens visuais persistem na sessão atual.');
-            sessionStorage.setItem('localStorageWarned', 'true'); // Evita alertas repetidos
+        console.error('Falha ao salvar no localStorage:', e);
+        try {
+            sessionStorage.setItem('carrinho', JSON.stringify(carrinho)); // Fallback para sessionStorage
+        } catch (e2) {
+            console.error('Falha total no storage:', e2);
+            // Removido o alert para evitar interrupções no usuário; só log no console
         }
     }
 }
@@ -74,7 +76,7 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         } else {
             carrinho.push({ produto: jogo, quantidade: quantidade });
         }
-        salvarCarrinho(); // Usa try-catch
+        salvarCarrinho(); // Usa fallback
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
     }
@@ -92,7 +94,7 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         } else {
             itemExistente.quantidade = novaQuantidade;
         }
-        salvarCarrinho(); // Usa try-catch
+        salvarCarrinho(); // Usa fallback
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
         if (document.getElementById('itens-carrinho')) {
@@ -303,7 +305,7 @@ if (document.getElementById('itens-carrinho')) {
 
     function removerDoCarrinho(index) {
         carrinho.splice(index, 1);
-        salvarCarrinho(); // Usa try-catch
+        salvarCarrinho(); // Usa fallback
         renderizarCarrinho();
     }
 
