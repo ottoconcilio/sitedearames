@@ -23,6 +23,10 @@ body {
     color: #8a9c25 !important;
 }
 
+.nav-tabs .nav-link {
+    color: black !important;
+}
+
 .card {
     border: none;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -39,7 +43,7 @@ body {
 }
 
 .btn-primary {
-    background-color: #28a745;
+    background-color: #0d6efd; /* Azul padrão do Bootstrap */
     border: none;
 }
 
