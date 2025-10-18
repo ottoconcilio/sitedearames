@@ -179,15 +179,12 @@ function atualizarBotoesQuantidade() {
 
         if (quantidade > 0) {
             if (!qtyControl) {
-                // Criar o controle de quantidade com rótulo "Qtd."
                 qtyControl = document.createElement('div');
                 qtyControl.className = 'quantity-control d-flex align-items-center mb-2 mt-2';
                 qtyControl.dataset.id = id;
-
                 const label = document.createElement('span');
                 label.textContent = 'Qtd.: ';
                 label.className = 'me-2 fw-bold text-muted';
-
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.min = '0';
@@ -195,36 +192,27 @@ function atualizarBotoesQuantidade() {
                 input.className = 'form-control form-control-sm';
                 input.style.width = '60px';
                 configurarInputQuantidade(input, id);
-
                 const removerBtn = document.createElement('button');
                 removerBtn.textContent = 'Remover';
-                removerBtn.className = 'btn btn-danger btn-sm ms-2';
+                removerBtn.className = 'btn btn-danger btn-sm ms-1';
+                removerBtn.style.fontSize = '0.8rem'; // Encaixa melhor
                 removerBtn.addEventListener('click', () => {
                     atualizarQuantidadeCarrinho(id, 0);
                 });
-
                 qtyControl.appendChild(label);
                 qtyControl.appendChild(input);
                 qtyControl.appendChild(removerBtn);
-
-                // Inserir abaixo do preço (elemento .card-text.fw-bold no card-body)
                 const cardBody = botao.closest('.card-body');
                 const precoElement = cardBody.querySelector('.card-text.fw-bold');
                 if (precoElement) {
                     precoElement.insertAdjacentElement('afterend', qtyControl);
-                } else {
-                    // Fallback: inserir antes do botão se não encontrar o preço
-                    botao.insertAdjacentElement('beforebegin', qtyControl);
                 }
             } else {
-                // Atualizar o valor no input existente
                 const input = qtyControl.querySelector('input');
                 input.value = quantidade;
             }
-
-            // Configurar botão como "Produto Adicionado" e azul
             botao.textContent = 'Produto Adicionado';
-            sincronizarCorBotao(botao, true);  // Azul para adicionado
+            sincronizarCorBotao(botao, true);
         } else {
             if (qtyControl) {
                 qtyControl.remove();
