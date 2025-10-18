@@ -20,6 +20,33 @@ const produtos = [
 
 const numeroWhatsApp = '5511989894259';
 let carrinho = [];
+let storageFalhou = false; // Flag para detectar falha no storage
+
+// Função para mostrar alerta de erro
+function mostrarAlertaErro() {
+    // Criar div de alerta Bootstrap se não existir
+    let alerta = document.getElementById('alerta-erro-carrinho');
+    if (!alerta) {
+        alerta = document.createElement('div');
+        alerta.id = 'alerta-erro-carrinho';
+        alerta.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+        alerta.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
+        alerta.innerHTML = `
+            <strong>Erro ao adicionar produtos ao carrinho!</strong><br>
+            Tente novamente em outro dispositivo.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alerta);
+        
+        // Inicializar Bootstrap dismiss se necessário
+        const bsAlert = new bootstrap.Alert(alerta);
+        alerta.addEventListener('closed.bs.alert', () => {
+            storageFalhou = false; // Reset flag ao fechar
+        });
+    } else {
+        alerta.classList.add('show');
+    }
+}
 
 // Carregamento do carrinho com fallback para sessionStorage
 try {
@@ -37,14 +64,22 @@ function salvarCarrinho() {
     try {
         localStorage.setItem('carrinho', JSON.stringify(carrinho));
         sessionStorage.removeItem('carrinho'); // Prioriza localStorage
+        storageFalhou = false;
     } catch (e) {
         console.error('Falha ao salvar no localStorage:', e);
+        storageFalhou = true;
         try {
             sessionStorage.setItem('carrinho', JSON.stringify(carrinho)); // Fallback para sessionStorage
+            storageFalhou = false; // Se sessionStorage funcionar, não é erro crítico
         } catch (e2) {
             console.error('Falha total no storage:', e2);
-            // Removido o alert para evitar interrupções no usuário; só log no console
+            storageFalhou = true;
         }
+    }
+    
+    // Mostrar alerta se falhou
+    if (storageFalhou) {
+        mostrarAlertaErro();
     }
 }
 
@@ -76,7 +111,7 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         } else {
             carrinho.push({ produto: jogo, quantidade: quantidade });
         }
-        salvarCarrinho(); // Usa fallback
+        salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
     }
@@ -94,7 +129,7 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         } else {
             itemExistente.quantidade = novaQuantidade;
         }
-        salvarCarrinho(); // Usa fallback
+        salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
         if (document.getElementById('itens-carrinho')) {
@@ -124,15 +159,11 @@ function configurarInputQuantidade(input, id) {
     });
 }
 
-// Função para sincronizar a cor do botão com base no texto
+// Função para sincronizar a cor do botão (sempre verde para ambos os estados)
 function sincronizarCorBotao(botao) {
-    if (botao.textContent.trim() === 'Produto Adicionado') {
-        botao.classList.remove('btn-success');
-        botao.classList.add('btn-primary');
-    } else {
-        botao.classList.remove('btn-primary');
-        botao.classList.add('btn-success');
-    }
+    // Manter sempre btn-success (verde), independentemente do texto
+    botao.classList.remove('btn-primary');
+    botao.classList.add('btn-success');
 }
 
 function atualizarBotoesQuantidade() {
@@ -189,7 +220,7 @@ function atualizarBotoesQuantidade() {
 
             // Configurar botão como "Produto Adicionado"
             botao.textContent = 'Produto Adicionado';
-            sincronizarCorBotao(botao);  // Sincroniza a cor com o texto
+            sincronizarCorBotao(botao);  // Sempre verde
         } else {
             if (qtyControl) {
                 qtyControl.remove();
@@ -197,7 +228,7 @@ function atualizarBotoesQuantidade() {
 
             // Configurar botão de volta para "Adicionar ao Carrinho"
             botao.textContent = 'Adicionar ao Carrinho';
-            sincronizarCorBotao(botao);  // Sincroniza a cor com o texto
+            sincronizarCorBotao(botao);  // Sempre verde
         }
     });
 }
