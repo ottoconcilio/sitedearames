@@ -354,6 +354,13 @@ if (document.getElementById('itens-carrinho')) {
         const url = `https://wa.me/${numeroWhatsApp}?text=${mensagem}`;
         
         window.open(url, '_blank');
+        
+        // Resetar o carrinho após enviar para WhatsApp
+        carrinho = [];
+        salvarCarrinho();
+        atualizarContadorCarrinho();
+        renderizarCarrinho();
+        atualizarBotoesQuantidade(); // Atualiza botões na página inicial se aplicável
     }
 
     document.addEventListener('DOMContentLoaded', renderizarCarrinho);
