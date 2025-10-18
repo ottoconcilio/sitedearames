@@ -159,9 +159,9 @@ function configurarInputQuantidade(input, id) {
     });
 }
 
-// Função para sincronizar a cor do botão com base no texto
-function sincronizarCorBotao(botao) {
-    if (botao.textContent.trim() === 'Produto Adicionado') {
+// Função para sincronizar a cor do botão baseada no estado (não no texto)
+function sincronizarCorBotao(botao, isAdicionado) {
+    if (isAdicionado) {
         botao.classList.remove('btn-success');
         botao.classList.add('btn-primary');
     } else {
@@ -222,17 +222,17 @@ function atualizarBotoesQuantidade() {
                 input.value = quantidade;
             }
 
-            // Configurar botão como "Produto Adicionado"
+            // Configurar botão como "Produto Adicionado" e azul
             botao.textContent = 'Produto Adicionado';
-            sincronizarCorBotao(botao);  // Azul para adicionado
+            sincronizarCorBotao(botao, true);  // Azul para adicionado
         } else {
             if (qtyControl) {
                 qtyControl.remove();
             }
 
-            // Configurar botão de volta para "Adicionar ao Carrinho"
+            // Configurar botão de volta para "Adicionar ao Carrinho" e verde
             botao.textContent = 'Adicionar ao Carrinho';
-            sincronizarCorBotao(botao);  // Verde para adicionar
+            sincronizarCorBotao(botao, false);  // Verde para adicionar
         }
     });
 }
