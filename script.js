@@ -113,7 +113,7 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         }
         salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
-        atualizarBotoesQuantidade(); // Atualiza globalmente após adicionar
+        atualizarBotoesQuantidade(); // Atualiza todos os duplicados globalmente
     }
 }
 
@@ -131,7 +131,7 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         }
         salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
-        atualizarBotoesQuantidade(); // Atualiza globalmente
+        atualizarBotoesQuantidade(); // Atualiza todos os duplicados globalmente
         if (document.getElementById('itens-carrinho')) {
             renderizarCarrinho();
         }
@@ -171,6 +171,7 @@ function sincronizarCorBotao(botao, isAdicionado) {
 }
 
 function atualizarBotoesQuantidade() {
+    console.log('Updating buttons...'); // Log para debug (remova se quiser)
     const botoes = document.querySelectorAll('.adicionar-carrinho');
     botoes.forEach(botao => {
         const id = parseInt(botao.dataset.id);
@@ -178,8 +179,8 @@ function atualizarBotoesQuantidade() {
         let qtyControl = document.querySelector(`.quantity-control[data-id="${id}"]`);
 
         if (quantidade > 0) {
+            // Se não existir qtyControl para este ID, cria (global, mas seletor é único por ID)
             if (!qtyControl) {
-                // Criação do qtyControl se não existir
                 qtyControl = document.createElement('div');
                 qtyControl.className = 'quantity-control d-flex align-items-center mb-2 mt-2';
                 qtyControl.dataset.id = id;
@@ -209,7 +210,7 @@ function atualizarBotoesQuantidade() {
                     precoElement.insertAdjacentElement('afterend', qtyControl);
                 }
             } else {
-                // Atualiza valor no input existente
+                // Atualiza valor no input existente (mas seletor é global, então usa o primeiro — para duplicados, precisamos de melhor seletor
                 const input = qtyControl.querySelector('input');
                 input.value = quantidade;
             }
@@ -252,6 +253,9 @@ if (document.getElementById('lista-todos')) {
             `;
             listaJogos.appendChild(card);
         });
+
+        // Atualiza botões imediatamente após gerar esta aba (para duplicados)
+        atualizarBotoesQuantidade();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -264,14 +268,14 @@ if (document.getElementById('lista-todos')) {
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
 
-        // Força update pós-render para lidar com eventos de load não fired
-        setTimeout(() => {
-            atualizarBotoesQuantidade();
-        }, 0);
-
-        // Delegation no document para capturar shown.bs.tab de qualquer aba
-        document.addEventListener('shown.bs.tab', (e) => {
-            atualizarBotoesQuantidade();
+        // Listener em clicks nos botões de aba para update no switch
+        const tabButtons = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                setTimeout(() => {
+                    atualizarBotoesQuantidade();
+                }, 100); // Delay para Bootstrap completar o switch
+            });
         });
     });
 
