@@ -113,7 +113,7 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         }
         salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
-        atualizarBotoesQuantidade();
+        atualizarBotoesQuantidade(); // Atualiza globalmente após adicionar
     }
 }
 
@@ -131,7 +131,7 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         }
         salvarCarrinho(); // Usa fallback e detecta erro
         atualizarContadorCarrinho();
-        atualizarBotoesQuantidade();
+        atualizarBotoesQuantidade(); // Atualiza globalmente
         if (document.getElementById('itens-carrinho')) {
             renderizarCarrinho();
         }
@@ -179,6 +179,7 @@ function atualizarBotoesQuantidade() {
 
         if (quantidade > 0) {
             if (!qtyControl) {
+                // Criação do qtyControl se não existir
                 qtyControl = document.createElement('div');
                 qtyControl.className = 'quantity-control d-flex align-items-center mb-2 mt-2';
                 qtyControl.dataset.id = id;
@@ -208,6 +209,7 @@ function atualizarBotoesQuantidade() {
                     precoElement.insertAdjacentElement('afterend', qtyControl);
                 }
             } else {
+                // Atualiza valor no input existente
                 const input = qtyControl.querySelector('input');
                 input.value = quantidade;
             }
@@ -262,12 +264,14 @@ if (document.getElementById('lista-todos')) {
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
 
-        // Adicionar listeners para atualizar botões ao mudar de aba (agora nos painéis das abas)
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        tabPanes.forEach(pane => {
-            pane.addEventListener('shown.bs.tab', () => {
-                atualizarBotoesQuantidade();
-            });
+        // Força update pós-render para lidar com eventos de load não fired
+        setTimeout(() => {
+            atualizarBotoesQuantidade();
+        }, 0);
+
+        // Delegation no document para capturar shown.bs.tab de qualquer aba
+        document.addEventListener('shown.bs.tab', (e) => {
+            atualizarBotoesQuantidade();
         });
     });
 
