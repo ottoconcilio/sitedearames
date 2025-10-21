@@ -217,10 +217,8 @@ function atualizarBotoesQuantidade() {
             if (qtyControl) {
                 qtyControl.remove();
             }
-
-            // Configurar botão de volta para "Adicionar ao Carrinho" e verde
             botao.textContent = 'Adicionar ao Carrinho';
-            sincronizarCorBotao(botao, false);  // Verde para adicionar
+            sincronizarCorBotao(botao, false);
         }
     });
 }
@@ -263,6 +261,14 @@ if (document.getElementById('lista-todos')) {
         gerarCards('personalizado');
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
+
+        // Adicionar listeners para atualizar botões ao mudar de aba
+        const tabButtons = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
+        tabButtons.forEach(button => {
+            button.addEventListener('shown.bs.tab', () => {
+                atualizarBotoesQuantidade();
+            });
+        });
     });
 
     document.getElementById('myTabContent').addEventListener('click', (e) => {
