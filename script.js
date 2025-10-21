@@ -262,10 +262,10 @@ if (document.getElementById('lista-todos')) {
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
 
-        // Adicionar listeners para atualizar botões ao mudar de aba
-        const tabButtons = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
-        tabButtons.forEach(button => {
-            button.addEventListener('shown.bs.tab', () => {
+        // Adicionar listeners para atualizar botões ao mudar de aba (agora nos painéis das abas)
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        tabPanes.forEach(pane => {
+            pane.addEventListener('shown.bs.tab', () => {
                 atualizarBotoesQuantidade();
             });
         });
