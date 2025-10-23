@@ -23,6 +23,16 @@ body {
     color: #8a9c25 !important;
 }
 
+.nav-tabs .nav-link {
+    color: black !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: black !important;
+    background-color: #e9ecef;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
 .card {
     border: none;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
