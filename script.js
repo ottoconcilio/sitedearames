@@ -1,22 +1,4 @@
-Pensou por 16sProblema Identificado
-O problema ocorre porque os produtos são exibidos de forma duplicada no DOM da página: cada produto aparece tanto na aba "todos" quanto na aba específica de sua categoria (ex.: um produto "Fácil" tem cards em "todos" e "facil"). Isso cria múltiplos botões .adicionar-carrinho com o mesmo data-id para o mesmo produto.
-Ao adicionar um produto ao carrinho:
-
-A função atualizarBotoesQuantidade() usa document.querySelector(.quantity-control[data-id="${id}"]) para verificar se o controle de quantidade já existe. Como é um seletor global, ele sempre pega o primeiro elemento encontrado (geralmente o da aba "todos", que é renderizado primeiro).
-Se adicionado da aba "todos", o controle de quantidade é criado apenas ali, e o botão da aba específica (ex.: "facil") é atualizado para "Produto Adicionado", mas sem o controle de quantidade (input + remover) nessa instância.
-Se adicionado de outra aba, o seletor pode não encontrar ou criar corretamente no local esperado, pois prioriza o global.
-Resultado: Nas abas específicas, o botão muda de texto/cor, mas o controle de quantidade não aparece, pois o código assume cards únicos por ID.
-
-Isso não afeta a aba "todos" porque ela é renderizada primeiro e não tem duplicatas internas.
-Solução
-
-Modifiquei atualizarBotoesQuantidade() para trabalhar localmente por card: Para cada botão, busca/cria/remove o .quantity-control dentro do próprio .card-body do card associado àquele botão. Isso garante que cada instância duplicada tenha seu próprio controle de quantidade.
-Como a quantidade é global (no array carrinho), todas as instâncias para o mesmo ID serão sincronizadas automaticamente ao atualizar (via chamada recursiva em atualizarQuantidadeCarrinho).
-Adicionei data-id ao .quantity-control para consistência, mas o escopo agora é local.
-O resto do código permanece igual, sem quebrar a funcionalidade existente.
-
-Aqui está o código corrigido completo do arquivo script.js (substitua o conteúdo atual por este). Teste adicionando produtos de diferentes abas — agora o input de quantidade e botão "Remover" aparecerão em todas as instâncias duplicadas.
-javascriptconst produtos = [
+const produtos = [
     { id: 1, nome: "Pássaro", valor: 14.99, categoria: "Fácil" },
     { id: 2, nome: "Corrente", valor: 14.99, categoria: "Médio" },
     { id: 3, nome: "Espiral", valor: 6.99, categoria: "Portáteis" },
@@ -394,3 +376,4 @@ if (document.getElementById('itens-carrinho')) {
     
     finalizarPedidoBtn.addEventListener('click', finalizarPedido);
 }
+
