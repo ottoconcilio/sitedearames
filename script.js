@@ -222,14 +222,14 @@ function atualizarBotoesQuantidade() {
     botoes.forEach(botao => {
         const id = parseInt(botao.dataset.id);
         const quantidade = getQuantidadeNoCarrinho(id);
-        let qtyControl = document.querySelector(`.quantity-control[data-id="${id}"]`);
+        const cardBody = botao.closest('.card-body');
+        let qtyControl = cardBody ? cardBody.querySelector('.quantity-control') : null;
 
         if (quantidade > 0) {
             if (!qtyControl) {
                 // Criar o controle de quantidade com rótulo "Qtd."
                 qtyControl = document.createElement('div');
                 qtyControl.className = 'quantity-control d-flex align-items-center mb-2 mt-2';
-                qtyControl.dataset.id = id;
 
                 const label = document.createElement('span');
                 label.textContent = 'Qtd.: ';
@@ -255,7 +255,6 @@ function atualizarBotoesQuantidade() {
                 qtyControl.appendChild(removerBtn);
 
                 // Inserir abaixo do preço (elemento .card-text.fw-bold no card-body)
-                const cardBody = botao.closest('.card-body');
                 const precoElement = cardBody.querySelector('.card-text.fw-bold');
                 if (precoElement) {
                     precoElement.insertAdjacentElement('afterend', qtyControl);
@@ -326,7 +325,6 @@ if (document.getElementById('lista-todos')) {
         // Listener para mudanças de aba para atualizar botões de quantidade
         const triggerTabList = document.querySelectorAll('#myTab button');
         triggerTabList.forEach(triggerEl => {
-            const tabTrigger = new bootstrap.Tab(triggerEl);
             triggerEl.addEventListener('shown.bs.tab', function (event) {
                 atualizarBotoesQuantidade();
             });
