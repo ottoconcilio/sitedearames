@@ -37,12 +37,10 @@ try {
 function salvarCarrinho() {
     try {
         localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        return true; // Sucesso
     } catch (e) {
         console.error('Falha ao salvar carrinho no localStorage:', e);
-        if (typeof alert !== 'undefined' && !sessionStorage.getItem('localStorageWarned')) {
-            alert('Aviso: O armazenamento local não está disponível no mobile (arquivo local). Use um servidor web (ex: python -m http.server) para salvar o carrinho. Itens visuais persistem na sessão atual.');
-            sessionStorage.setItem('localStorageWarned', 'true'); // Evita alertas repetidos
-        }
+        return false; // Falha
     }
 }
 
@@ -158,7 +156,12 @@ function adicionarAoCarrinho(id, quantidade = 1) {
         } else {
             carrinho.push({ produto: jogo, quantidade: quantidade });
         }
-        salvarCarrinho(); // Usa try-catch
+        const salvou = salvarCarrinho(); // Usa try-catch e retorna sucesso/falha
+        if (!salvou) {
+            alert('Erro ao adicionar o produto ao carrinho. Tente novamente em outro dispositivo.');
+            // Opcional: remover o item do carrinho se falhou no save
+            carrinho = carrinho.filter(item => item.produto.id !== id);
+        }
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
     }
@@ -176,7 +179,14 @@ function atualizarQuantidadeCarrinho(id, novaQuantidade) {
         } else {
             itemExistente.quantidade = novaQuantidade;
         }
-        salvarCarrinho(); // Usa try-catch
+        const salvou = salvarCarrinho(); // Usa try-catch e retorna sucesso/falha
+        if (!salvou && novaQuantidade !== 0) {
+            alert('Erro ao atualizar a quantidade no carrinho. Tente novamente em outro dispositivo.');
+            // Reverter a mudança se falhou
+            if (novaQuantidade !== 0) {
+                itemExistente.quantidade = getQuantidadeNoCarrinho(id) || 1; // Reverter para valor anterior aproximado
+            }
+        }
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
         if (document.getElementById('itens-carrinho')) {
@@ -403,7 +413,15 @@ if (document.getElementById('itens-carrinho')) {
 
     function removerDoCarrinho(index) {
         carrinho.splice(index, 1);
-        salvarCarrinho(); // Usa try-catch
+        const salvou = salvarCarrinho(); // Usa try-catch e retorna sucesso/falha
+        if (!salvou) {
+            alert('Erro ao remover o produto do carrinho. Tente novamente em outro dispositivo.');
+            // Reverter remoção se falhou
+            const jogo = produtos.find(p => p.id === carrinho[index]?.produto?.id);
+            if (jogo) {
+                carrinho.splice(index, 0, { produto: jogo, quantidade: 1 });
+            }
+        }
         renderizarCarrinho();
     }
 
