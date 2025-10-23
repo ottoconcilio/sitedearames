@@ -239,7 +239,10 @@ function atualizarBotoesQuantidade() {
             if (!qtyControl) {
                 // Criar o controle de quantidade com rótulo "Qtd."
                 qtyControl = document.createElement('div');
-                qtyControl.className = 'quantity-control d-flex align-items-center mb-2 mt-2';
+                qtyControl.className = 'quantity-control mb-2 mt-2';
+
+                const qtyRow = document.createElement('div');
+                qtyRow.className = 'd-flex align-items-center mb-1';
 
                 const label = document.createElement('span');
                 label.textContent = 'Qtd.: ';
@@ -253,15 +256,17 @@ function atualizarBotoesQuantidade() {
                 input.style.width = '60px';
                 configurarInputQuantidade(input, id);
 
+                qtyRow.appendChild(label);
+                qtyRow.appendChild(input);
+
                 const removerBtn = document.createElement('button');
                 removerBtn.textContent = 'Remover';
-                removerBtn.className = 'btn btn-danger btn-sm ms-2';
+                removerBtn.className = 'btn btn-danger btn-sm w-100 mt-1';
                 removerBtn.addEventListener('click', () => {
                     atualizarQuantidadeCarrinho(id, 0);
                 });
 
-                qtyControl.appendChild(label);
-                qtyControl.appendChild(input);
+                qtyControl.appendChild(qtyRow);
                 qtyControl.appendChild(removerBtn);
 
                 // Inserir abaixo do preço (elemento .card-text.fw-bold no card-body)
