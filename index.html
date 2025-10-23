@@ -5,53 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Gênio a Fio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet"> <!-- Link para o novo CSS -->
+    <link href="styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Gênio a Fio</a>
-            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="true" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button> -->
-            <!-- <div class="collapse navbar-collapse" id="navbarNav"> -->
-                <!-- <ul class="navbar-nav ms-auto"> -->
-                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a></li>
-                    <li class="nav-item"><a class="nav-link" href="carrinho.html"><i class="fas fa-shopping-cart"></i> Carrinho (<span id="contador-carrinho">0</span>)</a></li>
-                <!-- </ul> -->
-            <!-- </div> -->
+            <a class="navbar-brand" href="index.html">Gênio a Fio</a>
+            <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a></li>
+            <li class="nav-item"><a class="nav-link" href="carrinho.html"><i class="fas fa-shopping-cart"></i> Carrinho (<span id="contador-carrinho">0</span>)</a></li>
         </div>
     </nav>
-    <div class="banner">Bem-vindo à Gênio a Fio - Desafie sua Mente com Puzzles de Arame!</div>
+
+    <div class="banner">
+        Bem-vindo à Gênio a Fio! Desafie sua mente com nossos puzzles de arame.
+    </div>
 
     <div class="container my-5">
-        <h2 class="text-center mb-4">Nossos Puzzles</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation"><button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button" role="tab">Todos</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="portateis-tab" data-bs-toggle="tab" data-bs-target="#portateis" type="button" role="tab">Portáteis</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="facil-tab" data-bs-toggle="tab" data-bs-target="#facil" type="button" role="tab">Fácil</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="medio-tab" data-bs-toggle="tab" data-bs-target="#medio" type="button" role="tab">Médio</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="dificil-tab" data-bs-toggle="tab" data-bs-target="#dificil" type="button" role="tab">Difícil</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="personalizado-tab" data-bs-toggle="tab" data-bs-target="#personalizado" type="button" role="tab">Personalizado</button></li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#lista-todos" type="button" role="tab">Todos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="portateis-tab" data-bs-toggle="tab" data-bs-target="#lista-portateis" type="button" role="tab">Portáteis</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="facil-tab" data-bs-toggle="tab" data-bs-target="#lista-facil" type="button" role="tab">Fácil</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="medio-tab" data-bs-toggle="tab" data-bs-target="#lista-medio" type="button" role="tab">Médio</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="dificil-tab" data-bs-toggle="tab" data-bs-target="#lista-dificil" type="button" role="tab">Difícil</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="personalizado-tab" data-bs-toggle="tab" data-bs-target="#lista-personalizado" type="button" role="tab">Personalizado</button>
+            </li>
         </ul>
-        <div class="tab-content mt-3" id="myTabContent">
-            <div class="tab-pane fade show active" id="todos" role="tabpanel"><div class="row" id="lista-todos"></div></div>
-            <div class="tab-pane fade" id="portateis" role="tabpanel"><div class="row" id="lista-portateis"></div></div>
-            <div class="tab-pane fade" id="facil" role="tabpanel"><div class="row" id="lista-facil"></div></div>
-            <div class="tab-pane fade" id="medio" role="tabpanel"><div class="row" id="lista-medio"></div></div>
-            <div class="tab-pane fade" id="dificil" role="tabpanel"><div class="row" id="lista-dificil"></div></div>
-            <div class="tab-pane fade" id="personalizado" role="tabpanel"><div class="row" id="lista-personalizado"></div></div>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="lista-todos" role="tabpanel"></div>
+            <div class="tab-pane fade" id="lista-portateis" role="tabpanel"></div>
+            <div class="tab-pane fade" id="lista-facil" role="tabpanel"></div>
+            <div class="tab-pane fade" id="lista-medio" role="tabpanel"></div>
+            <div class="tab-pane fade" id="lista-dificil" role="tabpanel"></div>
+            <div class="tab-pane fade" id="lista-personalizado" role="tabpanel"></div>
         </div>
     </div>
 
-    <div class="container my-5">
-        <h2 class="text-center mb-4">Vídeo sobre a Construção do Puzzle</h2>
-        <div class="ratio ratio-16x9">
-            <iframe src="https://www.youtube.com/embed/SEU_VIDEO_AQUI" allowfullscreen></iframe> <!-- Substitua pelo seu vídeo -->
-        </div>
-    </div>
+    <footer class="footer">
+        © 2025 Gênio a Fio. Todos os direitos reservados.
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
