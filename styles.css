@@ -99,3 +99,19 @@ body {
 .table img {
     cursor: pointer; /* Indica que a imagem é clicável */
 }
+
+.quantity-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.quantity-control .d-flex {
+    flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+    .quantity-control .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
