@@ -91,7 +91,6 @@ closeBtn.style.cssText = `
 const arrowBtn = document.createElement('button');
 arrowBtn.style.cssText = `
     position: absolute;
-    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     background: rgba(255,255,255,0.3);
@@ -114,14 +113,17 @@ function openImageModal(id) {
     modalImg.src = getImagePath(id);
     modal.style.display = 'flex';
     const isOriginal = id <= 17;
+    arrowBtn.style.display = 'block';
     if (isOriginal) {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
+        arrowBtn.style.right = '20px';
+        arrowBtn.style.left = 'auto';
         arrowBtn.onclick = () => openImageModal(id + 17);
-        arrowBtn.style.display = 'block';
     } else {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
+        arrowBtn.style.left = '20px';
+        arrowBtn.style.right = 'auto';
         arrowBtn.onclick = () => openImageModal(id - 17);
-        arrowBtn.style.display = 'block';
     }
     closeBtn.onclick = closeModal;
     window.onclick = (e) => {
@@ -320,6 +322,15 @@ if (document.getElementById('lista-todos')) {
         gerarCards('personalizado');
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
+
+        // Listener para mudanças de aba para atualizar botões de quantidade
+        const triggerTabList = document.querySelectorAll('#myTab button');
+        triggerTabList.forEach(triggerEl => {
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            triggerEl.addEventListener('shown.bs.tab', function (event) {
+                atualizarBotoesQuantidade();
+            });
+        });
     });
 
     document.getElementById('myTabContent').addEventListener('click', (e) => {
@@ -382,7 +393,7 @@ if (document.getElementById('itens-carrinho')) {
             });
 
             // Adicionar listeners para os inputs de quantidade após renderizar
-            document.queryListenerAll('.quantity-input').forEach(input => {
+            document.querySelectorAll('.quantity-input').forEach(input => {
                 const index = parseInt(input.dataset.index);
                 configurarInputQuantidade(input, carrinho[index].produto.id);
             });
