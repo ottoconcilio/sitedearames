@@ -261,7 +261,8 @@ function atualizarBotoesQuantidade() {
 
                 const removerBtn = document.createElement('button');
                 removerBtn.textContent = 'Remover';
-                removerBtn.className = 'btn btn-danger btn-sm w-100 mt-1';
+                removerBtn.className = 'btn btn-danger btn-sm mt-1';
+                removerBtn.style.width = 'auto';
                 removerBtn.addEventListener('click', () => {
                     atualizarQuantidadeCarrinho(id, 0);
                 });
