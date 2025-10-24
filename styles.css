@@ -109,15 +109,10 @@ body {
     flex-wrap: wrap;
 }
 
-.quantity-control .btn-danger {
-    width: 50%;
-    max-width: 70px; /* Limita a largura máxima para evitar excesso em telas maiores */
-}
-
 @media (max-width: 576px) {
-    .quantity-control .btn-danger {
-        width: 100%;
-        max-width: none; /* Em mobile, ocupa toda a largura disponível, mas ainda compacto */
+    .quantity-control .btn {
+        width: auto;
+        margin-top: 0.5rem;
     }
 
     .table-responsive {
