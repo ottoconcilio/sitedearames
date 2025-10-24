@@ -119,4 +119,14 @@ body {
         width: 100%;
         max-width: none; /* Em mobile, ocupa toda a largura disponível, mas ainda compacto */
     }
+
+    .table-responsive {
+        -webkit-overflow-scrolling: touch; /* Melhora o scroll em iOS */
+    }
+
+    #itens-carrinho th:last-child,
+    #itens-carrinho td:last-child {
+        width: 1%; /* Força a coluna do botão a ser mínima, evitando overflow */
+        white-space: nowrap; /* Impede quebra de linha no botão */
+    }
 }
