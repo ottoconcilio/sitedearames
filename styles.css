@@ -111,7 +111,7 @@ body {
 
 @media (max-width: 576px) {
     .quantity-control .btn {
-        width: 100%;
+        width: auto;
         margin-top: 0.5rem;
     }
 }
