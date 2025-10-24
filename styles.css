@@ -50,12 +50,12 @@ body {
 }
 
 .btn-primary {
-    background-color: #28a745;
+    background-color: #0d6efd; /* Azul padrão do Bootstrap para "Produto Adicionado" */
     border: none;
 }
 
 .btn-success {
-    background-color: #28a745;
+    background-color: #28a745; /* Verde para "Adicionar ao Carrinho" */
 }
 
 .btn-danger {
