@@ -9,6 +9,7 @@ const produtos = [
     { id: 8, nome: "Mola", valor: 14.99, categoria: "Fácil" },
     { id: 9, nome: "Labirinto", valor: 14.99, categoria: "Médio" },
     { id: 10, nome: "Esquenta cabeça", valor: 14.99, categoria: "Médio" },
+    { id: 11, nome: "Três argolas", valor: 14.99, categoria: "Médio" },
     { id: 12, nome: "Espiral impossível", valor: 14.99, categoria: "Difícil" },
     { id: 13, nome: "Triângulo", valor: 6.99, categoria: "Portáteis" },
     { id: 14, nome: "Espiral", valor: 14.99, categoria: "Fácil" },
@@ -19,6 +20,26 @@ const produtos = [
 
 const numeroWhatsApp = '5511989894259';
 let carrinho = [];
+
+// Objeto para cache de imagens pré-carregadas
+const imageCache = {};
+
+// Função para pré-carregar todas as imagens pares em background
+function preloadAllPairs() {
+    const allIds = [...Array(17).keys()].map(i => i + 1); // IDs 1-17
+    allIds.forEach(id => {
+        const img1 = new Image();
+        const img2 = new Image();
+        img1.src = getImagePath(id);
+        img2.src = getImagePath(id + 17);
+        imageCache[`${id}`] = img1;
+        imageCache[`${id + 17}`] = img2;
+        img1.onload = () => console.log(`Pré-carregada: ${img1.src}`);
+        img2.onload = () => console.log(`Pré-carregada: ${img2.src}`);
+        img1.onerror = () => console.warn(`Falha no pré-load: ${img1.src}`);
+        img2.onerror = () => console.warn(`Falha no pré-load: ${img2.src}`);
+    });
+}
 
 // Carregamento do carrinho com try-catch para mobile (file://)
 try {
@@ -53,19 +74,6 @@ function getImagePath(id) {
     return `images/${id}.jpg`;
 }
 
-// Função para pré-carregar imagem
-function preloadImage(src) {
-    const img = new Image();
-    img.src = src;
-    return img.complete ? Promise.resolve() : new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => {
-            console.error('Erro ao pré-carregar:', src);
-            reject();
-        };
-    });
-}
-
 // Criar modal para visualização de imagens em tela cheia
 const modal = document.createElement('div');
 modal.id = 'imageModal';
@@ -83,11 +91,28 @@ modal.style.cssText = `
 `;
 
 const modalImg = document.createElement('img');
-modalImg.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain;';
+modalImg.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain; transition: opacity 0.3s ease; opacity: 1;';
 modalImg.onerror = function() {
     console.error('Erro ao carregar imagem:', this.src);
     this.src = 'https://via.placeholder.com/400x200?text=Imagem+Indispon%C3%ADvel'; // Fallback
 };
+
+const loadingSpinner = document.createElement('div');
+loadingSpinner.style.cssText = `
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    display: none;
+`;
+loadingSpinner.style.animation = 'spin 1s linear infinite'; // CSS keyframe inline
+modal.appendChild(loadingSpinner);
 
 const closeBtn = document.createElement('span');
 closeBtn.innerHTML = '&times;';
@@ -124,42 +149,51 @@ modal.appendChild(arrowBtn);
 document.body.appendChild(modal);
 
 function openImageModal(id) {
-    console.log('Abrindo modal para ID:', id); // Debug: rastreia o ID chamado (remova após teste)
     const imgPath = getImagePath(id);
-    modalImg.src = imgPath;
+    console.log('Abrindo modal para ID:', id, 'Path:', imgPath); // Debug: rastreia (remova após teste)
+
+    // Mostrar spinner e fade out imagem atual
+    modalImg.style.opacity = '0';
+    loadingSpinner.style.display = 'block';
+
+    // Usar cache se disponível, senão carregar
+    if (imageCache[id]) {
+        modalImg.src = imgPath;
+        modalImg.style.opacity = '1';
+        loadingSpinner.style.display = 'none';
+        console.log('Usando cache para ID:', id);
+    } else {
+        const img = new Image();
+        img.onload = () => {
+            modalImg.src = imgPath;
+            modalImg.style.opacity = '1';
+            loadingSpinner.style.display = 'none';
+            imageCache[id] = img; // Cache para futuro
+            console.log('Carregada e cacheada:', imgPath);
+        };
+        img.onerror = () => {
+            modalImg.src = 'https://via.placeholder.com/400x200?text=Imagem+Indispon%C3%ADvel';
+            modalImg.style.opacity = '1';
+            loadingSpinner.style.display = 'none';
+            console.error('Falha no load:', imgPath);
+        };
+        img.src = imgPath;
+    }
+
     modal.style.display = 'flex';
     const isOriginal = id <= 17;
-
-    // Pré-carregar a imagem par (se aplicável) para troca rápida
-    if (isOriginal) {
-        preloadImage(getImagePath(id + 17)).catch(() => {
-            console.warn('Pré-carregamento do par falhou para ID:', id + 17);
-        });
-    } else {
-        preloadImage(getImagePath(id - 17)).catch(() => {
-            console.warn('Pré-carregamento do original falhou para ID:', id - 17);
-        });
-    }
 
     arrowBtn.style.display = 'block';
     if (isOriginal) {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
         arrowBtn.style.right = '20px';
         arrowBtn.style.left = 'auto';
-        arrowBtn.onclick = () => {
-            console.log('Clicando direita de ID:', id); // Debug: rastreia clique (remova após teste)
-            modalImg.src = getImagePath(id + 17); // Troca imediata, já pré-carregada
-            openImageModal(id + 17); // Recursão para atualizar seta
-        };
+        arrowBtn.onclick = () => openImageModal(id + 17);
     } else {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
         arrowBtn.style.left = '20px';
         arrowBtn.style.right = 'auto';
-        arrowBtn.onclick = () => {
-            console.log('Clicando esquerda de ID:', id); // Debug: rastreia clique (remova após teste)
-            modalImg.src = getImagePath(id - 17); // Troca imediata, já pré-carregada
-            openImageModal(id - 17); // Recursão para atualizar seta
-        };
+        arrowBtn.onclick = () => openImageModal(id - 17);
     }
     closeBtn.onclick = closeModal;
     window.onclick = (e) => {
@@ -172,6 +206,8 @@ function openImageModal(id) {
 
 function closeModal() {
     modal.style.display = 'none';
+    loadingSpinner.style.display = 'none';
+    modalImg.style.opacity = '1';
     document.onkeydown = null;
     window.onclick = null;
 }
@@ -376,6 +412,9 @@ if (document.getElementById('lista-todos')) {
         atualizarContadorCarrinho();
         atualizarBotoesQuantidade();
 
+        // Pré-carregar todas as imagens pares em background (apenas na página principal)
+        preloadAllPairs();
+
         // Listener para mudanças de aba para atualizar botões de quantidade
         const triggerTabList = document.querySelectorAll('#myTab button');
         triggerTabList.forEach(triggerEl => {
@@ -393,11 +432,9 @@ if (document.getElementById('lista-todos')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            console.log('Clique na imagem, src:', imgSrc); // Debug: rastreia src original (remova após teste)
             const match = imgSrc.match(/images\/(\d+)\.jpg/); // Match parcial para timestamp
             if (match) {
                 const id = parseInt(match[1]);
-                console.log('ID extraído:', id); // Debug: rastreia ID (remova após teste)
                 openImageModal(id);
             } else {
                 console.error('Falha no parsing do ID do src:', imgSrc);
@@ -493,11 +530,9 @@ if (document.getElementById('itens-carrinho')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            console.log('Clique na imagem do carrinho, src:', imgSrc); // Debug: rastreia src (remova após teste)
             const match = imgSrc.match(/images\/(\d+)\.jpg/); // Match parcial para timestamp
             if (match) {
                 const id = parseInt(match[1]);
-                console.log('ID extraído no carrinho:', id); // Debug: rastreia ID (remova após teste)
                 openImageModal(id);
             } else {
                 console.error('Falha no parsing do ID no carrinho, src:', imgSrc);
