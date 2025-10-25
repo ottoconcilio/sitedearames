@@ -9,7 +9,6 @@ const produtos = [
     { id: 8, nome: "Mola", valor: 14.99, categoria: "Fácil" },
     { id: 9, nome: "Labirinto", valor: 14.99, categoria: "Médio" },
     { id: 10, nome: "Esquenta cabeça", valor: 14.99, categoria: "Médio" },
-    { id: 11, nome: "Três argolas", valor: 14.99, categoria: "Médio" },
     { id: 12, nome: "Espiral impossível", valor: 14.99, categoria: "Difícil" },
     { id: 13, nome: "Triângulo", valor: 6.99, categoria: "Portáteis" },
     { id: 14, nome: "Espiral", valor: 14.99, categoria: "Fácil" },
@@ -49,9 +48,22 @@ function removeAccents(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// Função para gerar o caminho da imagem com timestamp para bust cache
+// Função para gerar o caminho da imagem (sem timestamp para cache normal)
 function getImagePath(id) {
-    return `images/${id}.jpg?t=${Date.now()}`;
+    return `images/${id}.jpg`;
+}
+
+// Função para pré-carregar imagem
+function preloadImage(src) {
+    const img = new Image();
+    img.src = src;
+    return img.complete ? Promise.resolve() : new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => {
+            console.error('Erro ao pré-carregar:', src);
+            reject();
+        };
+    });
 }
 
 // Criar modal para visualização de imagens em tela cheia
@@ -75,9 +87,6 @@ modalImg.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain;'
 modalImg.onerror = function() {
     console.error('Erro ao carregar imagem:', this.src);
     this.src = 'https://via.placeholder.com/400x200?text=Imagem+Indispon%C3%ADvel'; // Fallback
-};
-modalImg.onload = function() {
-    console.log('Imagem carregada com sucesso:', this.src);
 };
 
 const closeBtn = document.createElement('span');
@@ -115,26 +124,41 @@ modal.appendChild(arrowBtn);
 document.body.appendChild(modal);
 
 function openImageModal(id) {
-    console.log('Abrindo modal para ID:', id); // Debug: rastreia o ID chamado
-    modalImg.src = getImagePath(id);
+    console.log('Abrindo modal para ID:', id); // Debug: rastreia o ID chamado (remova após teste)
+    const imgPath = getImagePath(id);
+    modalImg.src = imgPath;
     modal.style.display = 'flex';
     const isOriginal = id <= 17;
+
+    // Pré-carregar a imagem par (se aplicável) para troca rápida
+    if (isOriginal) {
+        preloadImage(getImagePath(id + 17)).catch(() => {
+            console.warn('Pré-carregamento do par falhou para ID:', id + 17);
+        });
+    } else {
+        preloadImage(getImagePath(id - 17)).catch(() => {
+            console.warn('Pré-carregamento do original falhou para ID:', id - 17);
+        });
+    }
+
     arrowBtn.style.display = 'block';
     if (isOriginal) {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
         arrowBtn.style.right = '20px';
         arrowBtn.style.left = 'auto';
         arrowBtn.onclick = () => {
-            console.log('Clicando direita de ID:', id); // Debug: rastreia clique
-            openImageModal(id + 17);
+            console.log('Clicando direita de ID:', id); // Debug: rastreia clique (remova após teste)
+            modalImg.src = getImagePath(id + 17); // Troca imediata, já pré-carregada
+            openImageModal(id + 17); // Recursão para atualizar seta
         };
     } else {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
         arrowBtn.style.left = '20px';
         arrowBtn.style.right = 'auto';
         arrowBtn.onclick = () => {
-            console.log('Clicando esquerda de ID:', id); // Debug: rastreia clique
-            openImageModal(id - 17);
+            console.log('Clicando esquerda de ID:', id); // Debug: rastreia clique (remova após teste)
+            modalImg.src = getImagePath(id - 17); // Troca imediata, já pré-carregada
+            openImageModal(id - 17); // Recursão para atualizar seta
         };
     }
     closeBtn.onclick = closeModal;
@@ -369,11 +393,11 @@ if (document.getElementById('lista-todos')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            console.log('Clique na imagem, src:', imgSrc); // Debug: rastreia src original
-            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Removido $ para match parcial se timestamp
+            console.log('Clique na imagem, src:', imgSrc); // Debug: rastreia src original (remova após teste)
+            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Match parcial para timestamp
             if (match) {
                 const id = parseInt(match[1]);
-                console.log('ID extraído:', id); // Debug: rastreia ID
+                console.log('ID extraído:', id); // Debug: rastreia ID (remova após teste)
                 openImageModal(id);
             } else {
                 console.error('Falha no parsing do ID do src:', imgSrc);
@@ -410,7 +434,7 @@ if (document.getElementById('itens-carrinho')) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>
-                        <img src="${getImagePath(item.produto.id)}" alt="${item.produto.nome}" style="width: 50px; height: 50px; object-fit: cover;"> 
+                        <img src="${getImagePath(item.produto.id)}" alt="${item.produto.nome}" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50x50?text=?';"> 
                         ${item.produto.nome}
                     </td>
                     <td>R$ ${precoUnitario}</td>
@@ -469,11 +493,11 @@ if (document.getElementById('itens-carrinho')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            console.log('Clique na imagem do carrinho, src:', imgSrc); // Debug: rastreia src
-            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Removido $ para match parcial se timestamp
+            console.log('Clique na imagem do carrinho, src:', imgSrc); // Debug: rastreia src (remova após teste)
+            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Match parcial para timestamp
             if (match) {
                 const id = parseInt(match[1]);
-                console.log('ID extraído no carrinho:', id); // Debug: rastreia ID
+                console.log('ID extraído no carrinho:', id); // Debug: rastreia ID (remova após teste)
                 openImageModal(id);
             } else {
                 console.error('Falha no parsing do ID no carrinho, src:', imgSrc);
