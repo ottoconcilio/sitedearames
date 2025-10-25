@@ -49,9 +49,9 @@ function removeAccents(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// Função para gerar o caminho da imagem
+// Função para gerar o caminho da imagem com timestamp para bust cache
 function getImagePath(id) {
-    return `images/${id}.jpg`;
+    return `images/${id}.jpg?t=${Date.now()}`;
 }
 
 // Criar modal para visualização de imagens em tela cheia
@@ -72,6 +72,13 @@ modal.style.cssText = `
 
 const modalImg = document.createElement('img');
 modalImg.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain;';
+modalImg.onerror = function() {
+    console.error('Erro ao carregar imagem:', this.src);
+    this.src = 'https://via.placeholder.com/400x200?text=Imagem+Indispon%C3%ADvel'; // Fallback
+};
+modalImg.onload = function() {
+    console.log('Imagem carregada com sucesso:', this.src);
+};
 
 const closeBtn = document.createElement('span');
 closeBtn.innerHTML = '&times;';
@@ -108,6 +115,7 @@ modal.appendChild(arrowBtn);
 document.body.appendChild(modal);
 
 function openImageModal(id) {
+    console.log('Abrindo modal para ID:', id); // Debug: rastreia o ID chamado
     modalImg.src = getImagePath(id);
     modal.style.display = 'flex';
     const isOriginal = id <= 17;
@@ -116,12 +124,18 @@ function openImageModal(id) {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-right"></i>';
         arrowBtn.style.right = '20px';
         arrowBtn.style.left = 'auto';
-        arrowBtn.onclick = () => openImageModal(id + 17);
+        arrowBtn.onclick = () => {
+            console.log('Clicando direita de ID:', id); // Debug: rastreia clique
+            openImageModal(id + 17);
+        };
     } else {
         arrowBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
         arrowBtn.style.left = '20px';
         arrowBtn.style.right = 'auto';
-        arrowBtn.onclick = () => openImageModal(id - 17);
+        arrowBtn.onclick = () => {
+            console.log('Clicando esquerda de ID:', id); // Debug: rastreia clique
+            openImageModal(id - 17);
+        };
     }
     closeBtn.onclick = closeModal;
     window.onclick = (e) => {
@@ -355,10 +369,14 @@ if (document.getElementById('lista-todos')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            const match = imgSrc.match(/images\/(\d+)\.jpg$/);
+            console.log('Clique na imagem, src:', imgSrc); // Debug: rastreia src original
+            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Removido $ para match parcial se timestamp
             if (match) {
                 const id = parseInt(match[1]);
+                console.log('ID extraído:', id); // Debug: rastreia ID
                 openImageModal(id);
+            } else {
+                console.error('Falha no parsing do ID do src:', imgSrc);
             }
         }
     });
@@ -451,10 +469,14 @@ if (document.getElementById('itens-carrinho')) {
             e.preventDefault();
             e.stopPropagation();
             const imgSrc = e.target.src;
-            const match = imgSrc.match(/images\/(\d+)\.jpg$/);
+            console.log('Clique na imagem do carrinho, src:', imgSrc); // Debug: rastreia src
+            const match = imgSrc.match(/images\/(\d+)\.jpg/); // Removido $ para match parcial se timestamp
             if (match) {
                 const id = parseInt(match[1]);
+                console.log('ID extraído no carrinho:', id); // Debug: rastreia ID
                 openImageModal(id);
+            } else {
+                console.error('Falha no parsing do ID no carrinho, src:', imgSrc);
             }
         } else if (e.target.classList.contains('remover-item')) {
             const index = parseInt(e.target.dataset.index);
