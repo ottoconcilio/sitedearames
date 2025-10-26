@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sistemap: https://sitedearames.vercel.app/sistemap.xml
